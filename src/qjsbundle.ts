@@ -13,12 +13,6 @@ type Options = {
 main();
 
 function main() {
-  if (yavascript.version !== "0.0.8") {
-    console.warn(
-      `This script is intended for yavascript 0.0.8, but the current yavascript version is '${yavascript.version}'. This might not work correctly.`
-    );
-  }
-
   const opts = getOptions();
   if (opts.help) {
     echo(String.dedent`
@@ -46,9 +40,6 @@ function main() {
   if (!isDir(quickjsRepoDir)) {
     exec("git clone https://github.com/suchipi/quickjs.git", {
       cwd: dirname(quickjsRepoDir),
-      // TODO exec type is wrong; these are optional
-      failOnNonZeroStatus: true,
-      captureOutput: false,
     });
   }
 
@@ -75,8 +66,10 @@ function main() {
     const outFile = std.open(opts.out, "w");
     pipe({ path: qjsBootstrapPath }, outFile);
     pipe({ path: opts.script }, outFile);
+    outFile.close();
+    chmod(0o755, opts.out);
 
-    console.log(`Program written to: ${outFile}`);
+    console.log(`Program written to: ${opts.out}`);
   } else if (opts.mode === "docker") {
     throw new Error("docker mode not yet implemented");
   } else {
@@ -87,7 +80,7 @@ function main() {
 function getOptions(): Options {
   const { flags, args } = parseScriptArgs({
     mode: string,
-    script: parseScriptArgs.Path,
+    script: Path,
     name: string,
     quickjsRef: string,
     help: boolean,
@@ -105,7 +98,7 @@ function getOptions(): Options {
   assert.type(
     script,
     types.string,
-    "'--script' must be specified as a path to a js file. It can also be specified as the first positional argument."
+    "'--script' must be specified as a path to a js file. It can alternatively be specified as the first positional argument."
   );
   script = Path.resolve(script);
 
@@ -113,7 +106,7 @@ function getOptions(): Options {
   assert.type(
     out,
     types.string,
-    "'--out' must be a string. If unspecified, it defaults to 'my_program'. It can also be specified as the second positional argument."
+    "'--out' must be a string. If unspecified, it defaults to 'my_program'. It can alternatively be specified as the second positional argument."
   );
   out = Path.resolve(out);
 
