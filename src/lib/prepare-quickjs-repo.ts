@@ -15,9 +15,8 @@ export function prepareQuickjsRepo(ref: string): Path {
     });
   }
 
-  // TODO (in yavascript): cwd should accept Path
-  exec("git fetch origin", { cwd: quickjsRepoDir.toString() });
-  exec(["git", "checkout", ref], { cwd: quickjsRepoDir.toString() });
+  exec("git fetch origin", { cwd: quickjsRepoDir });
+  exec(["git", "checkout", ref], { cwd: quickjsRepoDir });
 
   return quickjsRepoDir;
 }
