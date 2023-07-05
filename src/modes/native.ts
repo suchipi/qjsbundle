@@ -7,19 +7,17 @@ export function nativeMode(options: {
 }) {
   const { quickjsRepoDir, inputFile, outputFile } = options;
 
-  // TODO (in yavascript): cwd should accept Path
   exec("meta/build.sh", { cwd: quickjsRepoDir.toString() });
 
-  const qjsBootstrapPath = Path.join(quickjsRepoDir, "build/bin/qjsbootstrap");
+  const qjsBootstrapPath = quickjsRepoDir.concat("build/bin/qjsbootstrap");
 
   if (exists(outputFile)) {
     remove(outputFile);
   }
 
   const outFile = std.open(outputFile.toString(), "w");
-  pipe({ path: qjsBootstrapPath }, outFile);
-  // TODO (in yavascript): Path should be accepted as PipeSource
-  pipe({ path: inputFile.toString() }, outFile);
+  pipe(qjsBootstrapPath, outFile);
+  pipe(inputFile, outFile);
   outFile.close();
   chmod(0o755, outputFile);
 

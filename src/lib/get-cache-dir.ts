@@ -1,33 +1,43 @@
+import * as os from "quickjs:os";
+
 export function getCacheDir(): Path {
-  let kernelName: string;
-  try {
-    kernelName = $("uname").stdout.trim();
-  } catch (err) {
-    kernelName = "linux";
-  }
+  switch (os.platform) {
+    case "win32": {
+      const LOCALAPPDATA = env.LOCALAPPDATA;
+      assert.type(
+        LOCALAPPDATA,
+        types.string,
+        "'LOCALAPPDATA' env var needs to be defined (so we can clone quickjs into caches dir)"
+      );
 
-  if (kernelName === "Darwin") {
-    const HOME = env.HOME;
-    assert.type(
-      HOME,
-      types.string,
-      "'HOME' env var needs to be defined (so we can clone quickjs into caches dir)"
-    );
+      return new Path(LOCALAPPDATA);
+    }
 
-    return new Path(HOME, "Library", "Caches");
-  } else {
-    let cacheDir = env.XDG_CACHE_HOME ? new Path(env.XDG_CACHE_HOME) : null;
-    if (!cacheDir) {
+    case "darwin": {
       const HOME = env.HOME;
       assert.type(
         HOME,
         types.string,
-        "'HOME' or 'XDG_CACHE_HOME' env var needs to be defined (so we can clone quickjs into caches dir)"
+        "'HOME' env var needs to be defined (so we can clone quickjs into caches dir)"
       );
 
-      cacheDir = new Path(HOME, ".cache");
+      return new Path(HOME, "Library", "Caches");
     }
 
-    return cacheDir;
+    default: {
+      let cacheDir = env.XDG_CACHE_HOME ? new Path(env.XDG_CACHE_HOME) : null;
+      if (!cacheDir) {
+        const HOME = env.HOME;
+        assert.type(
+          HOME,
+          types.string,
+          "'HOME' or 'XDG_CACHE_HOME' env var needs to be defined (so we can clone quickjs into caches dir)"
+        );
+
+        cacheDir = new Path(HOME, ".cache");
+      }
+
+      return cacheDir;
+    }
   }
 }
