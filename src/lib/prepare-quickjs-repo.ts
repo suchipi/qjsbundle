@@ -1,9 +1,8 @@
-import { getCacheDir } from "./get-cache-dir";
+import { getAppCacheDir } from "./get-app-cache-dir";
 
 /** returns quickjs repo dir */
 export function prepareQuickjsRepo(ref: string): Path {
-  const cacheDir = getCacheDir();
-  const qjsbundleCacheDir = cacheDir.concat("qjsbundle");
+  const qjsbundleCacheDir = getAppCacheDir();
   console.log("using cache dir:", qjsbundleCacheDir.toString());
 
   ensureDir(qjsbundleCacheDir);

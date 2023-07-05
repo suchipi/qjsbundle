@@ -1,6 +1,6 @@
 import * as os from "quickjs:os";
 
-export function getCacheDir(): Path {
+export function getOsCacheDir(): Path {
   switch (os.platform) {
     case "win32": {
       const LOCALAPPDATA = env.LOCALAPPDATA;

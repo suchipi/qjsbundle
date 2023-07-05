@@ -1,11 +1,18 @@
-export type Options = {
-  mode: "native" | "docker";
-  inputFile: Path;
-  outputFile: Path;
-  quickjsRef: string;
-  help: boolean;
-  // TODO: bytecode option
-};
+export type Options =
+  | {
+      target: "help";
+    }
+  | {
+      target: "clean";
+    }
+  | {
+      target: "bundle";
+      mode: "native" | "docker";
+      inputFile: Path;
+      outputFile: Path;
+      quickjsRef: string;
+      // TODO: bytecode option
+    };
 
 export function getOptions(): Options {
   const { flags, args } = parseScriptArgs({
@@ -15,7 +22,16 @@ export function getOptions(): Options {
     quickjsRef: string,
     help: boolean,
     h: boolean,
+    clean: boolean,
   });
+
+  if (flags.help || flags.h) {
+    return { target: "help" };
+  }
+
+  if (flags.clean) {
+    return { target: "clean" };
+  }
 
   const mode = flags.mode || "native";
   assert.type(
@@ -48,13 +64,11 @@ export function getOptions(): Options {
     "'--quickjs-ref' must be a string. If unspecified, it defaults to 'main'"
   );
 
-  const help = flags.help || flags.h || false;
-
   return {
+    target: "bundle",
     mode,
     inputFile,
     outputFile,
     quickjsRef,
-    help,
   };
 }
