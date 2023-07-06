@@ -11,7 +11,7 @@ export type Options =
       inputFile: Path;
       outputFile: Path;
       quickjsRef: string;
-      // TODO: bytecode option
+      bytecode: boolean;
     };
 
 export function getOptions(): Options {
@@ -23,6 +23,7 @@ export function getOptions(): Options {
     help: boolean,
     h: boolean,
     clean: boolean,
+    bytecode: boolean,
   });
 
   if (flags.help || flags.h) {
@@ -45,7 +46,7 @@ export function getOptions(): Options {
 
   assert.type(
     inputFile,
-    types.Path,
+    Path,
     "'--input-file' must be specified as a path to a js file. It can alternatively be specified as the first positional argument."
   );
 
@@ -53,15 +54,22 @@ export function getOptions(): Options {
     flags.outputFile || new Path(args[1] || "my_program").resolve();
   assert.type(
     outputFile,
-    types.Path,
+    Path,
     "'--output-file' must be specified as a path to the output program file. If unspecified, it defaults to './my_program'. It can alternatively be specified as the second positional argument."
   );
 
   const quickjsRef: string = flags.quickjsRef || "main";
   assert.type(
     quickjsRef,
-    types.string,
+    string,
     "'--quickjs-ref' must be a string. If unspecified, it defaults to 'main'"
+  );
+
+  const bytecode: string = flags.bytecode ?? true;
+  assert.type(
+    bytecode,
+    boolean,
+    "'--bytecode' must be a boolean. If unspecified, it defaults to true"
   );
 
   return {
@@ -70,5 +78,6 @@ export function getOptions(): Options {
     inputFile,
     outputFile,
     quickjsRef,
+    bytecode,
   };
 }

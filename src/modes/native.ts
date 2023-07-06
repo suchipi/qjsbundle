@@ -1,25 +1,46 @@
 import * as std from "quickjs:std";
+import { getAppCacheDir } from "../lib/get-app-cache-dir";
 
 export function nativeMode(options: {
   quickjsRepoDir: Path;
   inputFile: Path;
   outputFile: Path;
+  useBytecode: boolean;
 }) {
   const { quickjsRepoDir, inputFile, outputFile } = options;
 
-  exec("meta/build.sh", { cwd: quickjsRepoDir.toString() });
-
-  const qjsBootstrapPath = quickjsRepoDir.concat("build/bin/qjsbootstrap");
+  exec("meta/build.sh", { cwd: quickjsRepoDir });
 
   if (exists(outputFile)) {
     remove(outputFile);
   }
 
+  let fileToAppend = inputFile;
+  if (options.useBytecode) {
+    const bytecodeFilePath = getAppCacheDir().concat(`bytecode-${Date.now()}`);
+    exec([
+      quickjsRepoDir.concat("build/bin/quickjs-run").toString(),
+      Path.resolve(__dirname, "../lib/file-to-bytecode.js"),
+      inputFile.toString(),
+      bytecodeFilePath.toString(),
+    ]);
+    fileToAppend = bytecodeFilePath;
+  }
+
+  const qjsBootstrapPath = options.useBytecode
+    ? quickjsRepoDir.concat("build/bin/qjsbootstrap-bytecode")
+    : quickjsRepoDir.concat("build/bin/qjsbootstrap");
+
   const outFile = std.open(outputFile.toString(), "w");
   pipe(qjsBootstrapPath, outFile);
-  pipe(inputFile, outFile);
+  pipe(fileToAppend, outFile);
   outFile.close();
   chmod(0o755, outputFile);
+
+  if (options.useBytecode) {
+    console.log("Deleting", fileToAppend.toString());
+    remove(fileToAppend);
+  }
 
   console.log(`Program written to: ${outputFile}`);
 }

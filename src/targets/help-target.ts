@@ -20,6 +20,12 @@ export function helpTarget() {
 
       --quickjs-ref: what commit/branch/whatever of github.com/suchipi/quickjs to use. defaults to 'main'
 
+      --bytecode: compile the input file to bytecode for a smaller output binary. defaults to true.
+
+        If you turn this off, the input file will be embedded in the final
+        binary as a string. This uses more space, but can result in more
+        readable error stack trace frames.
+
       --clean: remove this program's cached files (namely, a local copy of the quickjs repo)
 
       --help or -h: show this help text
