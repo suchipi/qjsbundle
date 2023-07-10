@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+dir="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+
+"${dir}"/src/qjsbundle.ts "$@"
