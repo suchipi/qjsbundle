@@ -1,6 +1,7 @@
 export type Options =
   | {
       target: "help";
+      mistake: boolean;
     }
   | {
       target: "clean";
@@ -27,7 +28,7 @@ export function getOptions(): Options {
   });
 
   if (flags.help || flags.h) {
-    return { target: "help" };
+    return { target: "help", mistake: false };
   }
 
   if (flags.clean) {
@@ -43,6 +44,11 @@ export function getOptions(): Options {
 
   let inputFile: Path | null =
     flags.inputFile || args[0] ? new Path(args[0]).resolve() : null;
+
+  if (inputFile == null) {
+    console.error("ERROR: Input file must be specified\n");
+    return { target: "help", mistake: true };
+  }
 
   assert.type(
     inputFile,
@@ -61,6 +67,7 @@ export function getOptions(): Options {
     new Path(
       args[1] || (mode === "native" ? "my_program" : "my_program-[PLATFORM]")
     ).resolve();
+
   assert.type(
     outputFile,
     Path,

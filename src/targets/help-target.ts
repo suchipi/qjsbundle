@@ -1,6 +1,6 @@
 import * as std from "quickjs:std";
 
-export function helpTarget() {
+export function helpTarget(opts: { mistake: boolean }) {
   echo(String.dedent`
     ${inverse(
       bold(blue("qjsbundle"))
@@ -31,5 +31,9 @@ export function helpTarget() {
       --help or -h: show this help text
   `);
 
-  std.exit(2);
+  if (opts.mistake) {
+    std.exit(2);
+  } else {
+    std.exit(0);
+  }
 }

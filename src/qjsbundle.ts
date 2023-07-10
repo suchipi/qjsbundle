@@ -11,7 +11,7 @@ function main() {
 
   switch (opts.target) {
     case "help": {
-      helpTarget();
+      helpTarget(opts);
       break;
     }
     case "clean": {
