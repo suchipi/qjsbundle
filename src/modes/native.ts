@@ -7,7 +7,7 @@ export function nativeMode(options: {
   outputFile: Path;
   useBytecode: boolean;
 }) {
-  const { quickjsRepoDir, inputFile, outputFile } = options;
+  const { quickjsRepoDir, inputFile, outputFile, useBytecode } = options;
 
   exec("meta/build.sh", { cwd: quickjsRepoDir });
 
@@ -16,7 +16,7 @@ export function nativeMode(options: {
   }
 
   let fileToAppend = inputFile;
-  if (options.useBytecode) {
+  if (useBytecode) {
     const bytecodeFilePath = getAppCacheDir().concat(`bytecode-${Date.now()}`);
     exec([
       quickjsRepoDir.concat("build/bin/quickjs-run").toString(),
@@ -27,7 +27,7 @@ export function nativeMode(options: {
     fileToAppend = bytecodeFilePath;
   }
 
-  const qjsBootstrapPath = options.useBytecode
+  const qjsBootstrapPath = useBytecode
     ? quickjsRepoDir.concat("build/bin/qjsbootstrap-bytecode")
     : quickjsRepoDir.concat("build/bin/qjsbootstrap");
 
@@ -37,7 +37,7 @@ export function nativeMode(options: {
   outFile.close();
   chmod(0o755, outputFile);
 
-  if (options.useBytecode) {
+  if (useBytecode) {
     console.log("Deleting", fileToAppend.toString());
     remove(fileToAppend);
   }

@@ -1,3 +1,5 @@
 .DS_Store
 yavascript.d.ts
 my_program
+my_program-x86_64*
+my_program-aarch64*

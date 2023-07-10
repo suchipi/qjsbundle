@@ -51,7 +51,10 @@ export function getOptions(): Options {
   );
 
   let outputFile: Path =
-    flags.outputFile || new Path(args[1] || "my_program").resolve();
+    flags.outputFile ||
+    new Path(
+      args[1] || (mode === "native" ? "my_program" : "my_program-[PLATFORM]")
+    ).resolve();
   assert.type(
     outputFile,
     Path,

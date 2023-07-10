@@ -19,6 +19,7 @@ export function bundleTarget(opts: Options & { target: "bundle" }) {
       quickjsRepoDir,
       inputFile: opts.inputFile,
       outputFile: opts.outputFile,
+      useBytecode: opts.bytecode,
     });
   } else {
     throw new Error(`Invalid mode: ${opts.mode}`);
