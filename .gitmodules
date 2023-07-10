@@ -1,0 +1,3 @@
+[submodule "deps/yavascript"]
+	path = deps/yavascript
+	url = https://github.com/suchipi/yavascript

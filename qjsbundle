@@ -1,4 +1,11 @@
 #!/usr/bin/env sh
 dir="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 
+pushd "$dir" > /dev/null
+  git submodule init
+  git submodule update
+popd > /dev/null
+
+export PATH="$dir/deps/yavascript/bin:$PATH"
+
 "${dir}"/src/qjsbundle.ts "$@"

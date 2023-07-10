@@ -1,6 +1,6 @@
 {
   "include": [
-    "./yavascript.d.ts",
+    "./deps/yavascript/yavascript.d.ts",
     "./src/**/*"
   ],
 
