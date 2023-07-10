@@ -50,6 +50,12 @@ export function getOptions(): Options {
     "'--input-file' must be specified as a path to a js file. It can alternatively be specified as the first positional argument."
   );
 
+  if (!exists(inputFile)) {
+    throw new Error(
+      `Cannot use the provided file as an input file, because it does not exist: ${inputFile.toString()}`
+    );
+  }
+
   let outputFile: Path =
     flags.outputFile ||
     new Path(
@@ -60,6 +66,12 @@ export function getOptions(): Options {
     Path,
     "'--output-file' must be specified as a path to the output program file. If unspecified, it defaults to './my_program'. It can alternatively be specified as the second positional argument."
   );
+
+  if (inputFile.toString() === outputFile.toString()) {
+    throw new Error(
+      `The input and output file cannot be the same: ${inputFile.toString()}`
+    );
+  }
 
   const quickjsRef: string = flags.quickjsRef || "main";
   assert.type(
