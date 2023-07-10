@@ -1,0 +1,2 @@
+- [ ] refactor flags from mode/bytecode/etc to just develop/release
+- [ ] archive artifacts into .tar.gz files as part of release mode
