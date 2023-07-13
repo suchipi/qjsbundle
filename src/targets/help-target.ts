@@ -10,21 +10,15 @@ export function helpTarget(opts: { mistake: boolean }) {
 
       --output-file (or second positional arg): path to create the program binary at
 
-      --mode: 'native' or 'docker'
+      --mode: 'debug' or 'release'
       
         method used to create the binaries.
-        'native' only builds binaries for the current platform (depends on node.js and ninja).
-        'docker' builds binaries for multiple platforms (depends on docker).
+        'debug' only builds binaries for the current platform (depends on node.js and ninja), and includes the full JS source string in the binary for debugging purposes.
+        'release' builds binaries for multiple platforms (depends on docker), and compiles the JS source string to bytecode to make smaller binaries (at the expense of error stack trace information).
         
-        defaults to 'native'.
+        defaults to 'debug'.
 
       --quickjs-ref: what commit/branch/whatever of github.com/suchipi/quickjs to use. defaults to 'main'
-
-      --bytecode: compile the input file to bytecode for a smaller output binary. defaults to true.
-
-        If you turn this off, the input file will be embedded in the final
-        binary as a string. This uses more space, but can result in more
-        readable error stack trace frames.
 
       --clean: remove this program's cached files (namely, a local copy of the quickjs repo)
 

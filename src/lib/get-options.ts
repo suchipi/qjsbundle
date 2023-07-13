@@ -8,11 +8,10 @@ export type Options =
     }
   | {
       target: "bundle";
-      mode: "native" | "docker";
+      mode: "debug" | "release";
       inputFile: Path;
       outputFile: Path;
       quickjsRef: string;
-      bytecode: boolean;
     };
 
 export function getOptions(): Options {
@@ -24,7 +23,6 @@ export function getOptions(): Options {
     help: boolean,
     h: boolean,
     clean: boolean,
-    bytecode: boolean,
   });
 
   if (flags.help || flags.h) {
@@ -35,11 +33,11 @@ export function getOptions(): Options {
     return { target: "clean" };
   }
 
-  const mode = flags.mode || "native";
+  const mode = flags.mode || "debug";
   assert.type(
     mode,
-    types.or(types.exactString("native"), types.exactString("docker")),
-    "'--mode' must be either 'native' or 'docker'"
+    types.or(types.exactString("debug"), types.exactString("release")),
+    "'--mode' must be either 'debug' or 'release'"
   );
 
   let inputFile: Path | null =
@@ -65,7 +63,7 @@ export function getOptions(): Options {
   let outputFile: Path =
     flags.outputFile ||
     new Path(
-      args[1] || (mode === "native" ? "my_program" : "my_program-[PLATFORM]")
+      args[1] || (mode === "debug" ? "my_program" : "my_program-[PLATFORM]")
     ).resolve();
 
   assert.type(
@@ -87,19 +85,11 @@ export function getOptions(): Options {
     "'--quickjs-ref' must be a string. If unspecified, it defaults to 'main'"
   );
 
-  const bytecode: string = flags.bytecode ?? true;
-  assert.type(
-    bytecode,
-    boolean,
-    "'--bytecode' must be a boolean. If unspecified, it defaults to true"
-  );
-
   return {
     target: "bundle",
     mode,
     inputFile,
     outputFile,
     quickjsRef,
-    bytecode,
   };
 }

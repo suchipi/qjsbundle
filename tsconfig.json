@@ -1,14 +1,12 @@
 {
-  "include": [
-    "./deps/yavascript/yavascript.d.ts",
-    "./src/**/*"
-  ],
+  "include": ["./deps/yavascript/yavascript.d.ts", "./src/**/*"],
 
   "compilerOptions": {
     "declaration": true,
     "lib": ["es2020"],
     "target": "es2020",
     "module": "ES2020",
+    "moduleResolution": "NodeNext",
 
     "allowJs": true,
     "checkJs": false,
@@ -25,6 +23,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
   }
 }

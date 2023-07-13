@@ -1,25 +1,23 @@
 #!/usr/bin/env yavascript
-import { Options } from "../lib/get-options";
-import { prepareQuickjsRepo } from "../lib/prepare-quickjs-repo";
-import { nativeMode } from "../modes/native";
-import { dockerMode } from "../modes/docker";
+import { Options } from "../../lib/get-options";
+import { prepareQuickjsRepo } from "../../lib/prepare-quickjs-repo";
+import { debugMode } from "./debug";
+import { releaseMode } from "./release";
 
 export function bundleTarget(opts: Options & { target: "bundle" }) {
   const quickjsRepoDir = prepareQuickjsRepo(opts.quickjsRef);
 
-  if (opts.mode === "native") {
-    nativeMode({
+  if (opts.mode === "debug") {
+    debugMode({
       quickjsRepoDir,
       inputFile: opts.inputFile,
       outputFile: opts.outputFile,
-      useBytecode: opts.bytecode,
     });
-  } else if (opts.mode === "docker") {
-    dockerMode({
+  } else if (opts.mode === "release") {
+    releaseMode({
       quickjsRepoDir,
       inputFile: opts.inputFile,
       outputFile: opts.outputFile,
-      useBytecode: opts.bytecode,
     });
   } else {
     throw new Error(`Invalid mode: ${opts.mode}`);

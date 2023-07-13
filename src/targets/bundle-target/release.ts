@@ -1,5 +1,5 @@
 import * as std from "quickjs:std";
-import { getAppCacheDir } from "../lib/get-app-cache-dir";
+import { getAppCacheDir } from "../../lib/get-app-cache-dir";
 
 const PLATFORMS = [
   "x86_64-apple-darwin",
@@ -13,13 +13,13 @@ const PLATFORMS = [
   "aarch64-unknown-linux-static",
 ];
 
-export function dockerMode(options: {
+// uses docker to build binaries for all supported platforms
+export function releaseMode(options: {
   quickjsRepoDir: Path;
   inputFile: Path;
   outputFile: Path;
-  useBytecode: boolean;
 }) {
-  const { quickjsRepoDir, inputFile, outputFile, useBytecode } = options;
+  const { quickjsRepoDir, inputFile, outputFile } = options;
 
   function outputFileFor(triplet: string) {
     const exeSuffix = /windows/.test(triplet) ? ".exe" : "";
@@ -55,17 +55,13 @@ export function dockerMode(options: {
   // NOTE: will delete the contents of quickjsRepoDir/build
   exec("meta/docker/build-all.sh", { cwd: quickjsRepoDir });
 
-  let fileToAppend = inputFile;
-  if (useBytecode) {
-    const bytecodeFilePath = getAppCacheDir().concat(`bytecode-${Date.now()}`);
-    exec([
-      quickjsRunOutPath.toString(),
-      Path.resolve(__dirname, "../lib/file-to-bytecode.js"),
-      inputFile.toString(),
-      bytecodeFilePath.toString(),
-    ]);
-    fileToAppend = bytecodeFilePath;
-  }
+  const bytecodeFilePath = getAppCacheDir().concat(`bytecode-${Date.now()}`);
+  exec([
+    quickjsRunOutPath.toString(),
+    Path.resolve(__dirname, "../lib/file-to-bytecode.js"),
+    inputFile.toString(),
+    bytecodeFilePath.toString(),
+  ]);
 
   for (const triplet of PLATFORMS) {
     const outputFile = outputFilesMap[triplet];
@@ -78,22 +74,18 @@ export function dockerMode(options: {
 
     const exeSuffix = /windows/.test(triplet) ? ".exe" : "";
 
-    const qjsBootstrapPath = useBytecode
-      ? quickjsRepoDir.concat(
-          `build/${triplet}/bin/qjsbootstrap-bytecode${exeSuffix}`
-        )
-      : quickjsRepoDir.concat(`build/${triplet}/bin/qjsbootstrap${exeSuffix}`);
+    const qjsBootstrapPath = quickjsRepoDir.concat(
+      `build/${triplet}/bin/qjsbootstrap-bytecode${exeSuffix}`
+    );
 
     console.log("Writing", outputFile.toString());
     const outFile = std.open(outputFile.toString(), "w");
     pipe(qjsBootstrapPath, outFile);
-    pipe(fileToAppend, outFile);
+    pipe(bytecodeFilePath, outFile);
     outFile.close();
     chmod(0o755, outputFile);
   }
 
-  if (useBytecode) {
-    console.log("Deleting", fileToAppend.toString());
-    remove(fileToAppend);
-  }
+  console.log("Deleting", bytecodeFilePath.toString());
+  remove(bytecodeFilePath);
 }

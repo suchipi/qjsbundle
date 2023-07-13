@@ -1,3 +1,3 @@
-- [ ] refactor flags from mode/bytecode/etc to just develop/release
+- [x] refactor flags from mode/bytecode/etc to just develop/release
 - [ ] archive artifacts into .tar.gz files as part of release mode
 - [ ] use rollup or esbuild or etc to bundle several files into one before appending to qjsbootstrap
