@@ -1,17 +1,6 @@
 import * as std from "quickjs:std";
 import { getAppCacheDir } from "../../lib/get-app-cache-dir";
-
-const PLATFORMS = [
-  "x86_64-apple-darwin",
-  "x86_64-unknown-linux-gnu",
-  "x86_64-unknown-linux-musl",
-  "x86_64-unknown-linux-static",
-  "x86_64-pc-windows-static",
-  "aarch64-apple-darwin",
-  "aarch64-unknown-linux-gnu",
-  "aarch64-unknown-linux-musl",
-  "aarch64-unknown-linux-static",
-];
+import { PLATFORMS } from "../../lib/platforms";
 
 // uses docker to build binaries for all supported platforms
 export function releaseMode(options: {

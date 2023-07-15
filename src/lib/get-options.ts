@@ -12,6 +12,12 @@ export type Options =
       inputFile: Path;
       outputFile: Path;
       quickjsRef: string;
+    }
+  | {
+      target: "archive";
+      inputFile: Path; // binary pattern with [PLATFORM]
+      outputFile: Path; // archive pattern with [PLATFORM]
+      additionalFilesDir: Path | null;
     };
 
 export function getOptions(): Options {
@@ -23,6 +29,8 @@ export function getOptions(): Options {
     help: boolean,
     h: boolean,
     clean: boolean,
+    archive: boolean,
+    additionalFilesDir: Path,
   });
 
   if (flags.help || flags.h) {
@@ -76,6 +84,17 @@ export function getOptions(): Options {
     throw new Error(
       `The input and output file cannot be the same: ${inputFile.toString()}`
     );
+  }
+
+  if (flags.archive) {
+    const additionalFilesDir: Path | null = flags.additionalFilesDir || null;
+
+    return {
+      target: "archive",
+      inputFile,
+      outputFile,
+      additionalFilesDir,
+    };
   }
 
   const quickjsRef: string = flags.quickjsRef || "main";
