@@ -62,7 +62,7 @@ export function getOptions(): Options {
     "'--input-file' must be specified as a path to a js file. It can alternatively be specified as the first positional argument."
   );
 
-  if (!exists(inputFile)) {
+  if (!flags.archive && !exists(inputFile)) {
     throw new Error(
       `Cannot use the provided file as an input file, because it does not exist: ${inputFile.toString()}`
     );

@@ -3,6 +3,7 @@ import { getOptions } from "./lib/get-options";
 import { helpTarget } from "./targets/help-target";
 import { cleanTarget } from "./targets/clean-target";
 import { bundleTarget } from "./targets/bundle-target";
+import { archiveTarget } from "./targets/archive-target";
 
 main();
 
@@ -20,6 +21,10 @@ function main() {
     }
     case "bundle": {
       bundleTarget(opts);
+      break;
+    }
+    case "archive": {
+      archiveTarget(opts);
       break;
     }
     default: {

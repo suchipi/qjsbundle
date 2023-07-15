@@ -26,11 +26,8 @@ export function archiveTarget(options: {
   }
 
   function outputFileFor(triplet: string) {
-    const exeSuffix = /windows/.test(triplet) ? ".exe" : "";
-    const templatePath = outputFileString + exeSuffix;
-
-    if (/\[PLATFORM\]/.test(templatePath)) {
-      return new Path(templatePath.replace(/\[PLATFORM\]/g, triplet));
+    if (/\[PLATFORM\]/.test(outputFileString)) {
+      return new Path(outputFileString.replace(/\[PLATFORM\]/g, triplet));
     } else {
       throw new Error(
         "When archiving, the output filename should be a pattern containing the string '[PLATFORM]'. Received output file was: " +
@@ -60,7 +57,10 @@ export function archiveTarget(options: {
         }
       }
 
-      exec(["tar", "-czvf", tarGzPath.toString(), platformDir.toString()]);
+      ensureDir(dirname(tarGzPath));
+      exec(["tar", "-czvf", tarGzPath.toString(), "."], {
+        cwd: platformDir,
+      });
     }
   } finally {
     remove(archiveCacheDir);
