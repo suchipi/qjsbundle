@@ -47,7 +47,7 @@ export function releaseMode(options: {
   const bytecodeFilePath = getAppCacheDir().concat(`bytecode-${Date.now()}`);
   exec([
     quickjsRunOutPath.toString(),
-    Path.resolve(__dirname, "../lib/file-to-bytecode.js"),
+    Path.resolve(__dirname, "../../lib/file-to-bytecode.js"),
     inputFile.toString(),
     bytecodeFilePath.toString(),
   ]);
