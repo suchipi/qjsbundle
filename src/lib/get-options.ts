@@ -18,7 +18,7 @@ export function getOptions(): Options {
   const { flags, args } = parseScriptArgs({
     mode: string,
     inputFile: Path,
-    outputFile: string,
+    outputFile: Path,
     quickjsRef: string,
     help: boolean,
     h: boolean,
