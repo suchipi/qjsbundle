@@ -18,6 +18,8 @@ export function helpTarget(opts: { mistake: boolean }) {
         
         defaults to 'debug'.
 
+      --archive: instead of bundling, create *.tar.gz archives containing the created binaries.
+
       --quickjs-ref: what commit/branch/whatever of github.com/suchipi/quickjs to use. defaults to 'main'
 
       --clean: remove this program's cached files (namely, a local copy of the quickjs repo)

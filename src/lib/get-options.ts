@@ -41,52 +41,38 @@ export function getOptions(): Options {
     return { target: "clean" };
   }
 
-  const mode = flags.mode || "debug";
-  assert.type(
-    mode,
-    types.or(types.exactString("debug"), types.exactString("release")),
-    "'--mode' must be either 'debug' or 'release'"
-  );
+  function getInputOutputFiles() {
+    const inputFile: Path | null =
+      flags.inputFile || args[0] ? new Path(args[0]).resolve() : null;
 
-  let inputFile: Path | null =
-    flags.inputFile || args[0] ? new Path(args[0]).resolve() : null;
+    const outputFile: Path | null =
+      flags.outputFile || args[1] ? new Path(args[1]).resolve() : null;
 
-  if (inputFile == null) {
-    console.error("ERROR: Input file must be specified\n");
-    return { target: "help", mistake: true };
-  }
+    if (
+      inputFile != null &&
+      outputFile != null &&
+      inputFile.toString() === outputFile.toString()
+    ) {
+      throw new Error(
+        `The input and output file cannot be the same: ${inputFile.toString()}`
+      );
+    }
 
-  assert.type(
-    inputFile,
-    Path,
-    "'--input-file' must be specified as a path to a js file. It can alternatively be specified as the first positional argument."
-  );
-
-  if (!flags.archive && !exists(inputFile)) {
-    throw new Error(
-      `Cannot use the provided file as an input file, because it does not exist: ${inputFile.toString()}`
-    );
-  }
-
-  let outputFile: Path =
-    flags.outputFile ||
-    new Path(
-      args[1] || (mode === "debug" ? "my_program" : "my_program-[PLATFORM]")
-    ).resolve();
-
-  assert.type(
-    outputFile,
-    Path,
-    "'--output-file' must be specified as a path to the output program file. If unspecified, it defaults to './my_program'. It can alternatively be specified as the second positional argument."
-  );
-
-  if (inputFile.toString() === outputFile.toString()) {
-    throw new Error(
-      `The input and output file cannot be the same: ${inputFile.toString()}`
-    );
+    return { inputFile, outputFile };
   }
 
   if (flags.archive) {
+    const { inputFile, outputFile } = getInputOutputFiles();
+    if (inputFile == null) {
+      console.error("ERROR: Input file pattern must be specified\n");
+      return { target: "help", mistake: true };
+    }
+
+    if (outputFile == null) {
+      console.error("ERROR: Output file pattern must be specified\n");
+      return { target: "help", mistake: true };
+    }
+
     const additionalFilesDir: Path | null = flags.additionalFilesDir || null;
 
     return {
@@ -97,12 +83,35 @@ export function getOptions(): Options {
     };
   }
 
-  const quickjsRef: string = flags.quickjsRef || "main";
+  // everything past here is bundle target
+
+  const mode = flags.mode || "debug";
   assert.type(
-    quickjsRef,
-    string,
-    "'--quickjs-ref' must be a string. If unspecified, it defaults to 'main'"
+    mode,
+    types.or(types.exactString("debug"), types.exactString("release")),
+    "'--mode' must be either 'debug' or 'release'"
   );
+
+  let { inputFile, outputFile } = getInputOutputFiles();
+
+  if (inputFile == null) {
+    console.error("ERROR: Input file must be specified\n");
+    return { target: "help", mistake: true };
+  }
+
+  if (!exists(inputFile)) {
+    throw new Error(
+      `Cannot use the provided file as an input file, because it does not exist: ${inputFile.toString()}`
+    );
+  }
+
+  outputFile =
+    outputFile ||
+    new Path(
+      mode === "debug" ? "my_program" : "my_program-[PLATFORM]"
+    ).resolve();
+
+  const quickjsRef: string = flags.quickjsRef || "main";
 
   return {
     target: "bundle",
